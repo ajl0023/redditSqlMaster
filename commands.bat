@@ -1,3 +1,3 @@
 git add . 
-git commit -m "added new sql server implementation"
+git commit -m "adding vercel implementation"
 git push origin master

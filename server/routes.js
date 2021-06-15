@@ -6,6 +6,9 @@ const AWS = require("aws-sdk");
 const fs = require("fs");
 
 module.exports = (app, db) => {
+   app.get("/", function (req, res) {
+    res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+  });
   app.get("/api/posts", (req, res) => {
     var sql = `
     SELECT 
@@ -546,5 +549,7 @@ FROM
         }
       });
     }
+  });app.get("*", function (req, res) {
+    res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
 };

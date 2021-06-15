@@ -1,6 +1,8 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-
+ app.get("/", function (req, res) {
+    res.sendFile(path.join(__dirname, "../tftapp/build", "index.html"));
+  });
 const app = express();
 const path = require("path");
 const dbConnection = require("./dbFunctions");
@@ -26,7 +28,7 @@ const checkauth = (req, res, next) => {
 
   next();
 };
-
+app.use(express.static(path.join(__dirname, "../client/build")));
 app.listen(process.env.PORT || 5000, async () => {
   app.use(checkauth);
   require("./routes")(app, dbConnection);
