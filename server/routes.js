@@ -26,48 +26,48 @@ module.exports = (app, db) => {
         res,
       });
     });
-    // var sql = `
-    //     SELECT
-    //     content,
-    //     image,
-    //     (SELECT
-    //             JSON_MERGE(JSON_OBJECT('username', username),
-    //                         JSON_OBJECT('_id', _id)) AS comment
-    //         FROM
-    //             users
-    //         WHERE
-    //             posts.author = users._id) AS author,
-    //     createdAt,
-    //     _id,
-    //     title,
-    //     ${
-    //       req.user
-    //         ? `(SELECT IFNULL((SELECT
-    //             score
-    //         FROM
-    //             votes
-    //         WHERE
-    //             votes.postid = posts._id
-    //                 AND votes.authorid = '${req.user._id}'),0)) as voteState`
-    //         : "0 as voteState"
-    //     },
-    //     (SELECT
-    //             IFNULL(SUM(votes.score),0)
-    //         FROM
-    //             votes
-    //         WHERE
-    //             votes.postid = posts._id) AS voteTotal
-    // FROM
-    //     mydb.posts`;
+    var sql = `
+        SELECT
+        content,
+        image,
+        (SELECT
+                JSON_MERGE(JSON_OBJECT('username', username),
+                            JSON_OBJECT('_id', _id)) AS comment
+            FROM
+                users
+            WHERE
+                posts.author = users._id) AS author,
+        createdAt,
+        _id,
+        title,
+        ${
+          req.user
+            ? `(SELECT IFNULL((SELECT
+                score
+            FROM
+                votes
+            WHERE
+                votes.postid = posts._id
+                    AND votes.authorid = '${req.user._id}'),0)) as voteState`
+            : "0 as voteState"
+        },
+        (SELECT
+                IFNULL(SUM(votes.score),0)
+            FROM
+                votes
+            WHERE
+                votes.postid = posts._id) AS voteTotal
+    FROM
+        mydb.posts`;
 
-    // connect.query(sql, function (err, result) {
-    //   if (err) throw err;
-    //   const parsed = result.map((result) => {
-    //     result.author = JSON.parse(result.author);
-    //     return result;
-    //   });
-    //   res.json(parsed);
-    // });
+    connect.query(sql, function (err, result) {
+      if (err) throw err;
+      const parsed = result.map((result) => {
+        result.author = JSON.parse(result.author);
+        return result;
+      });
+      res.json(parsed);
+    });
   });
   app.post("/api/logout", (req, res, next) => {
     res.clearCookie("refresh");
