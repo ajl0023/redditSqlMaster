@@ -21,7 +21,7 @@
     "vercel": "^23.0.0"
   },
   "scripts": {
-    "start": "nodemon ./server/index.js",
+    "start": "nodemon ./index.js",
     "test": "mocha",
     "lint": "./node_modules/.bin/eslint server/api/reddit-api.js"
   },
