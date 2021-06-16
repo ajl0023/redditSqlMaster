@@ -5,20 +5,26 @@ const multer = require("multer");
 const AWS = require("aws-sdk");
 const fs = require("fs");
 const path = require("path");
+
 module.exports = (app, db) => {
   app.get("/", function (req, res) {
     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
-  app.get("/api/posts", (req, res) => {
-    console.log(500000);
-    const connect = db();
-    console.log(connect);
-    connect.getConnection((err, res) => {
-      console.log({
-        err,
-        res,
-      });
+  app.get("/api/posts", async (req, res) => {
+    const connection = db();
+
+    connection.config({
+      host: "192.168.0.249",
+      database: "mydb",
+      user: "vercel2",
+      port: 3306,
+      password: "1",
     });
+    await connection.connect();
+    console.log(connection.getClient());
+    // const attempt = await connect();
+    // console.log(attempt);
+
     var sql = `
         SELECT
         content,
@@ -53,7 +59,7 @@ module.exports = (app, db) => {
     FROM
         mydb.posts`;
 
-    connect.query(sql, function (err, result) {
+    connection.query(sql, function (err, result) {
       if (err) throw err;
       const parsed = result.map((result) => {
         result.author = JSON.parse(result.author);
