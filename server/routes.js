@@ -20,9 +20,11 @@ module.exports = (app, db) => {
         password: "1",
       },
       onConnect: (t) => {
+        console.log(50000);
         console.log(t);
       },
       onError: (err) => {
+        console.log(50000);
         console.log(err);
       },
     });
