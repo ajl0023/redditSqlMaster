@@ -12,6 +12,7 @@ module.exports = (app, db) => {
   app.get("/api/posts", (req, res) => {
     console.log(500000);
     const connect = db();
+    console.log(connect);
     connect.getConnection((err, res) => {
       console.log({
         err,
