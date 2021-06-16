@@ -7,9 +7,25 @@ const fs = require("fs");
 const path = require("path");
 module.exports = (app, db) => {
   app.get("/", function (req, res) {
+    const connect = db();
+    connect.getConnection((err, res) => {
+      console.log({
+        err,
+        res,
+      });
+    });
+    console.log(500000);
     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
   app.get("/api/posts", (req, res) => {
+    console.log(500000);
+    const connect = db();
+    connect.getConnection((err, res) => {
+      console.log({
+        err,
+        res,
+      });
+    });
     var sql = `
     SELECT 
     content,
@@ -43,14 +59,7 @@ module.exports = (app, db) => {
             votes.postid = posts._id) AS voteTotal
 FROM
     mydb.posts`;
-    const connect = db();
-    connect.getConnection((err, res) => {
-      console.log({
-        err,
-        res,
-      });
-    });
-    console.log(500000);
+
     connect.query(sql, function (err, result) {
       if (err) throw err;
       const parsed = result.map((result) => {
