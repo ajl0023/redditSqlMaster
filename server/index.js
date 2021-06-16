@@ -27,13 +27,8 @@ const checkauth = (req, res, next) => {
   next();
 };
 app.use(express.static(path.join(__dirname, "../client/build")));
+app.use(checkauth);
+app.listen(process.env.PORT || 5000, () => {});
+require("./routes")(app, dbConnection.connect);
 
-app.listen(process.env.PORT || 5000, () => {
-  app.use(checkauth);
-
-  // require("./routes")(app, dbConnection.connect);
-});
-app.get("/api/posts", (req, res) => {
-  res.json(50444);
-});
 module.exports = app;
