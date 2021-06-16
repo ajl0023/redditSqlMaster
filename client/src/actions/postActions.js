@@ -157,7 +157,7 @@ export function fetchPosts(query, id, params, e) {
     dispatch(requestPosts(e));
     return axios
       .get(
-        `/api/posts${"/" + params && params.sort ? `sort/${params.sort}` : ""}${
+        `/api/posts${params && params.sort ? `/sort/${params.sort}` : ""}${
           query ? `?${query}=${id}` : ""
         }`,
         {
