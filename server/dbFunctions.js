@@ -1,5 +1,5 @@
 const mysql = require("mysql");
-const con = mysql.createConnection({
+const con = mysql.createPool({
   host: "192.168.0.249",
   user: "testuser",
   password: "test",
@@ -7,9 +7,5 @@ const con = mysql.createConnection({
   multipleStatements: true,
 });
 console.log(con);
-con.connect(function (err) {
-  console.log(err);
-  if (err) throw err;
-});
 
 module.exports = con;
