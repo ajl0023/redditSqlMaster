@@ -1,18 +1,13 @@
 const mysql = require("mysql");
-const con = require("serverless-mysql")();
-
-con.config({
+const con = mysql.createConnection({
   host: "%.%.%.%",
   user: "newuser",
-  port: 3306,
-  password: "1",
+  password: "100962Austin",
   database: "mydb",
-  connectTimeout: 30000,
   multipleStatements: true,
 });
+console.log(con);
 con.connect(function (err) {
-  console.log("🚀 ~ file: dbFunctions.js ~ line 12 ~ err", err);
-  console.log(err);
   if (err) throw err;
 });
 
