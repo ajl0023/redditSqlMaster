@@ -6,6 +6,11 @@ const con = mysql.createPool({
   database: "mydb",
   multipleStatements: true,
 });
-console.log(con);
+con.getConnection((err, res) => {
+  console.log({
+    err,
+    res,
+  });
+});
 
 module.exports = con;
