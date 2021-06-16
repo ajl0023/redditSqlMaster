@@ -11,8 +11,10 @@ module.exports = (app, db) => {
     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
   app.get("/api/posts", async (req, res) => {
+    console.log(50000);
     const mysql = require("serverless-mysql")({
       config: {
+        connectionLimit: 1000,
         host: "192.168.0.249",
         database: "mydb",
         user: "vercel2",
@@ -28,7 +30,11 @@ module.exports = (app, db) => {
         console.log(err);
       },
     });
-    await mysql.connect();
+    try {
+      await mysql.connect();
+    } catch (error) {
+      console.log(error);
+    }
     // const attempt = await connect();
     // console.log(attempt);
     // var sql = `
