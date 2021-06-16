@@ -43,8 +43,9 @@ module.exports = (app, db) => {
             votes.postid = posts._id) AS voteTotal
 FROM
     mydb.posts`;
-
-    db().query(sql, function (err, result) {
+    const connect = db();
+    console.log(connect);
+    connect.query(sql, function (err, result) {
       if (err) throw err;
       const parsed = result.map((result) => {
         result.author = JSON.parse(result.author);
