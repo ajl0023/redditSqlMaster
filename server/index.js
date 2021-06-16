@@ -27,22 +27,14 @@ const checkauth = (req, res, next) => {
   next();
 };
 app.use(express.static(path.join(__dirname, "../client/build")));
-app.get("/", function (req, res) {
-  const connect = db();
-  connect.getConnection((err, res) => {
-    console.log({
-      err,
-      res,
-    });
-  });
-  console.log(500000);
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
-});
-app.listen(process.env.PORT || 5000, async () => {
+
+app.listen(process.env.PORT || 5000, () => {
   app.use(checkauth);
-  require("./routes")(app, dbConnection.connect);
+
+  app.get("/api/posts", (req, res) => {
+    res.json(50444);
+  });
+  // require("./routes")(app, dbConnection.connect);
 });
-app.get("*", function (req, res) {
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
-});
+
 module.exports = app;
