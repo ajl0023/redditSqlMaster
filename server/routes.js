@@ -13,12 +13,7 @@ module.exports = (app, db) => {
     console.log(500000);
     const connect = db();
     console.log(connect);
-    connect.getConnection((err, res) => {
-      console.log({
-        err,
-        res,
-      });
-    });
+    connect.getConnection((err, res) => {});
     var sql = `
         SELECT
         content,
