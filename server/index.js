@@ -29,7 +29,7 @@ const checkauth = (req, res, next) => {
 app.use(express.static(path.join(__dirname, "../client/build")));
 app.listen(process.env.PORT || 5000, async () => {
   app.use(checkauth);
-  require("./routes")(app, dbConnection);
+  require("./routes")(app, dbConnection.connect);
 });
 
 module.exports = app;

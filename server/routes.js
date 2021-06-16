@@ -44,7 +44,7 @@ module.exports = (app, db) => {
 FROM
     mydb.posts`;
 
-    db.query(sql, function (err, result) {
+    db().query(sql, function (err, result) {
       if (err) throw err;
       const parsed = result.map((result) => {
         result.author = JSON.parse(result.author);
