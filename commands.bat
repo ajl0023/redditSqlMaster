@@ -1,3 +1,3 @@
 git add . 
-git commit -m "adding vercel implementation"
+git commit -m "fixed aws s3"
 git push origin master

@@ -1,8 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
- app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "../tftapp/build", "index.html"));
-  });
+
 const app = express();
 const path = require("path");
 const dbConnection = require("./dbFunctions");

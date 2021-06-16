@@ -4,9 +4,9 @@ require("dotenv").config();
 const multer = require("multer");
 const AWS = require("aws-sdk");
 const fs = require("fs");
-
+const path = require("path");
 module.exports = (app, db) => {
-   app.get("/", function (req, res) {
+  app.get("/", function (req, res) {
     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
   app.get("/api/posts", (req, res) => {
@@ -101,13 +101,19 @@ FROM
       }
     });
   });
+  AWS.config.update({
+    accessKeyId: process.env.AWS_ACCESS,
+    secretAccessKey: process.env.AWS_SECRET,
+
+    bucketname: process.env.BUCKET_NAME,
+    // (...)
+  });
   const storage = multer.memoryStorage();
   const upload = multer({ storage: storage });
   app.post("/api/posts", upload.single("file"), async (req, res) => {
     let locationUrl;
     AWS.config.setPromisesDependency();
     if (req.file) {
-      console.log(req.file);
       const s3 = new AWS.S3();
       const params = {
         ACL: "public-read",
@@ -549,7 +555,8 @@ FROM
         }
       });
     }
-  });app.get("*", function (req, res) {
+  });
+  app.get("*", function (req, res) {
     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
 };
