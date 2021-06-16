@@ -44,6 +44,12 @@ module.exports = (app, db) => {
 FROM
     mydb.posts`;
     const connect = db();
+    connect.getConnection((err, res) => {
+      console.log({
+        err,
+        res,
+      });
+    });
     console.log(connect);
     connect.query(sql, function (err, result) {
       if (err) throw err;

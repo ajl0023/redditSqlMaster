@@ -8,12 +8,7 @@ module.exports = {
       database: "mydb",
       multipleStatements: true,
     });
-    con.getConnection((err, res) => {
-      console.log({
-        err,
-        res,
-      });
-    });
+
     return con;
   },
 };
