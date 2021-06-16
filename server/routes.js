@@ -7,14 +7,6 @@ const fs = require("fs");
 const path = require("path");
 module.exports = (app, db) => {
   app.get("/", function (req, res) {
-    const connect = db();
-    connect.getConnection((err, res) => {
-      console.log({
-        err,
-        res,
-      });
-    });
-    console.log(500000);
     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
   app.get("/api/posts", (req, res) => {
