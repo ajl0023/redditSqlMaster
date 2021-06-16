@@ -1,3 +1,3 @@
 git add . 
-git commit -m "fixed aws s3"
+git commit -m "serverless mysql"
 git push origin master

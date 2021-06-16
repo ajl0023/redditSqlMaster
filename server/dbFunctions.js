@@ -1,12 +1,14 @@
 const mysql = require("mysql");
-const con = mysql.createConnection({
-  host: "reddit-sql-master.vercel.app",
-  user: "newuser",
-  port: 3306,
-  password: "1",
-  database: "mydb",
-  connectTimeout: 30000,
-  multipleStatements: true,
+const con = require("serverless-mysql")({
+  config: {
+    host: "192.168.0.249",
+    user: "newuser",
+    port: 3306,
+    password: "1",
+    database: "mydb",
+    connectTimeout: 30000,
+    multipleStatements: true,
+  },
 });
 
 con.connect(function (err) {
