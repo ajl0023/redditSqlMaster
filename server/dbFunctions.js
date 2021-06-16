@@ -1,5 +1,7 @@
 const mysql = require("mysql");
-const con = require("serverless-mysql")({
+const con = require("serverless-mysql");
+
+con({
   config: {
     host: "192.168.0.249",
     user: "newuser",
