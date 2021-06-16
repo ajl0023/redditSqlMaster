@@ -9,6 +9,7 @@ const con = mysql.createConnection({
 });
 
 con.connect(function (err) {
+  console.log("🚀 ~ file: dbFunctions.js ~ line 12 ~ err", err);
   console.log(err);
   if (err) throw err;
 });
