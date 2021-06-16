@@ -11,7 +11,11 @@ module.exports = (app, db) => {
     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
   app.get("/api/posts", async (req, res) => {
+    var tcpp = require("tcp-ping");
     const connect = db();
+    tcpp.ping({ address: "192.168.0.249", port: 3306 }, function (err, data) {
+      console.log(data);
+    });
     console.log(connect);
     var sql = `
         SELECT
