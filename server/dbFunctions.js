@@ -1,6 +1,6 @@
 const mysql = require("mysql");
 const con = mysql.createConnection({
-  host: "https://reddit-sql-master.vercel.app/",
+  host: "reddit-sql-master.vercel.app",
   user: "newuser",
   port: 3306,
   password: "1",
