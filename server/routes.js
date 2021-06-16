@@ -50,7 +50,7 @@ FROM
         res,
       });
     });
-    console.log(connect);
+    console.log(500000);
     connect.query(sql, function (err, result) {
       if (err) throw err;
       const parsed = result.map((result) => {
