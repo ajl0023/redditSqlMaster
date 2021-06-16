@@ -30,6 +30,9 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 app.listen(process.env.PORT || 5000, async () => {
   app.use(checkauth);
   require("./routes")(app, dbConnection.connect);
+  app.get("*", function (req, res) {
+    res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+  });
 });
 
 module.exports = app;
