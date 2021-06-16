@@ -6,6 +6,7 @@ const con = mysql.createConnection({
   database: "mydb",
   multipleStatements: true,
 });
+console.log(con);
 con.connect(function (err) {
   if (err) throw err;
 });
