@@ -11,62 +11,51 @@ module.exports = (app, db) => {
     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
   app.get("/api/posts", async (req, res) => {
-    const connection = db();
-
-    connection.config({
-      host: "192.168.0.249",
-      database: "mydb",
-      user: "vercel2",
-      port: 3306,
-      password: "1",
-    });
-    await connection.connect();
-    console.log(connection.getClient());
+    db();
+    res.json(5000);
     // const attempt = await connect();
     // console.log(attempt);
-
-    var sql = `
-        SELECT
-        content,
-        image,
-        (SELECT
-                JSON_MERGE(JSON_OBJECT('username', username),
-                            JSON_OBJECT('_id', _id)) AS comment
-            FROM
-                users
-            WHERE
-                posts.author = users._id) AS author,
-        createdAt,
-        _id,
-        title,
-        ${
-          req.user
-            ? `(SELECT IFNULL((SELECT
-                score
-            FROM
-                votes
-            WHERE
-                votes.postid = posts._id
-                    AND votes.authorid = '${req.user._id}'),0)) as voteState`
-            : "0 as voteState"
-        },
-        (SELECT
-                IFNULL(SUM(votes.score),0)
-            FROM
-                votes
-            WHERE
-                votes.postid = posts._id) AS voteTotal
-    FROM
-        mydb.posts`;
-
-    connection.query(sql, function (err, result) {
-      if (err) throw err;
-      const parsed = result.map((result) => {
-        result.author = JSON.parse(result.author);
-        return result;
-      });
-      res.json(parsed);
-    });
+    // var sql = `
+    //     SELECT
+    //     content,
+    //     image,
+    //     (SELECT
+    //             JSON_MERGE(JSON_OBJECT('username', username),
+    //                         JSON_OBJECT('_id', _id)) AS comment
+    //         FROM
+    //             users
+    //         WHERE
+    //             posts.author = users._id) AS author,
+    //     createdAt,
+    //     _id,
+    //     title,
+    //     ${
+    //       req.user
+    //         ? `(SELECT IFNULL((SELECT
+    //             score
+    //         FROM
+    //             votes
+    //         WHERE
+    //             votes.postid = posts._id
+    //                 AND votes.authorid = '${req.user._id}'),0)) as voteState`
+    //         : "0 as voteState"
+    //     },
+    //     (SELECT
+    //             IFNULL(SUM(votes.score),0)
+    //         FROM
+    //             votes
+    //         WHERE
+    //             votes.postid = posts._id) AS voteTotal
+    // FROM
+    //     mydb.posts`;
+    // db.query(sql, async function (err, result) {
+    //   if (err) throw err;
+    //   const parsed = result.map((result) => {
+    //     result.author = JSON.parse(result.author);
+    //     return result;
+    //   });
+    //   res.json(parsed);
+    // });
   });
   app.post("/api/logout", (req, res, next) => {
     res.clearCookie("refresh");
