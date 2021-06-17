@@ -13,13 +13,6 @@ module.exports = (app, db) => {
   app.get("/api/posts", async (req, res) => {
     var tcpp = require("tcp-ping");
     const connect = db();
-    tcpp.ping({ address: "192.168.0.249", port: 3306 }, function (err, data) {
-      if (data) {
-        console.log(data);
-      } else {
-        console.log(err);
-      }
-    });
 
     var sql = `
         SELECT
@@ -53,7 +46,7 @@ module.exports = (app, db) => {
             WHERE
                 votes.postid = posts._id) AS voteTotal
     FROM
-        mydb.posts`;
+        readditdb.posts`;
     connect.query(sql, async function (err, result) {
       if (err) throw err;
       const parsed = result.map((result) => {
@@ -102,7 +95,7 @@ module.exports = (app, db) => {
         WHERE
             votes.postid = posts._id) AS voteTotal
 FROM
-    mydb.posts WHERE _id = '${postid}'`;
+    readditdb.posts WHERE _id = '${postid}'`;
 
     db.query(sql, function (err, post) {
       if (post && post.length > 0) {
@@ -207,7 +200,7 @@ FROM
         WHERE
             votes.commentid = comments._id) AS voteTotal
 FROM
-    mydb.comments
+    readditdb.comments
       WHERE _id = @inserted
     `;
 
@@ -254,7 +247,7 @@ FROM
             ,
             dense_rank() OVER( order by depth) buckets
 FROM
-    mydb.comments
+    readditdb.comments
       WHERE Postid = "${postid}"
         ORDER BY master_comment
       `;
@@ -447,7 +440,7 @@ WHERE
         WHERE
             votes.postid = posts._id) AS voteTotal
 FROM
-    mydb.posts
+    readditdb.posts
     ORDER BY createdAt DESC
     `;
 
@@ -490,7 +483,7 @@ FROM
         WHERE
             votes.postid = posts._id) AS voteTotal
 FROM
-    mydb.posts
+    readditdb.posts
     ORDER BY hotScore DESC
     `;
 
@@ -533,7 +526,7 @@ FROM
         WHERE
             votes.postid = posts._id) AS voteTotal
 FROM
-    mydb.posts
+    readditdb.posts
     ORDER BY voteTotal DESC
     `;
 
