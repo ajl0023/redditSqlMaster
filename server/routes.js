@@ -11,9 +11,6 @@ module.exports = (app, db) => {
     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
   app.get("/api/posts", async (req, res) => {
-    var tcpp = require("tcp-ping");
-    const connect = db();
-
     var sql = `
         SELECT
         content,
@@ -47,7 +44,7 @@ module.exports = (app, db) => {
                 votes.postid = posts._id) AS voteTotal
     FROM
         readditdb.posts`;
-    connect.query(sql, async function (err, result) {
+    db.query(sql, async function (err, result) {
       if (err) throw err;
       const parsed = result.map((result) => {
         result.author = JSON.parse(result.author);
