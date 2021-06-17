@@ -2,11 +2,11 @@ const mysql = require("mysql");
 module.exports = {
   connect: () => {
     const con = mysql.createPool({
-      host: "192.168.0.249",
+      host: "database-1.c0yjxjsy2dww.us-west-1.rds.amazonaws.com",
       port: 3306,
-      user: "vercel2",
-      password: "1",
-      database: "mydb",
+
+      password: "100962austin",
+      database: "readditdb",
       multipleStatements: true,
     });
 
