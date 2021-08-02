@@ -1,7 +1,7 @@
 {
   "name": "reddit-react",
   "version": "0.1.0",
-  "proxy": "http://localhost:5000",
+  "proxy": "http://localhost:6200",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.3",

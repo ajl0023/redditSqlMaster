@@ -17,13 +17,13 @@ module.exports = (app, db) => {
         image,
         (SELECT
                 JSON_MERGE(JSON_OBJECT('username', username),
-                            JSON_OBJECT('_id', _id)) AS comment
+                            JSON_OBJECT('id', id)) AS comment
             FROM
                 users
             WHERE
-                posts.author = users._id) AS author,
+                posts.author = users.id) AS author,
         createdAt,
-        _id,
+        id,
         title,
         ${
           req.user
@@ -32,8 +32,8 @@ module.exports = (app, db) => {
             FROM
                 votes
             WHERE
-                votes.postid = posts._id
-                    AND votes.authorid = '${req.user._id}'),0)) as voteState`
+                votes.postid = posts.id
+                    AND votes.authorid = '${req.user.id}'),0)) as voteState`
             : "0 as voteState"
         },
         (SELECT
@@ -41,11 +41,13 @@ module.exports = (app, db) => {
             FROM
                 votes
             WHERE
-                votes.postid = posts._id) AS voteTotal
+                votes.postid = posts.id) AS voteTotal
     FROM
         readditdb.posts`;
+    console.log(sql);
     db.query(sql, async function (err, result) {
       if (err) throw err;
+      console.log(result);
       const parsed = result.map((result) => {
         result.author = JSON.parse(result.author);
         return result;
@@ -66,13 +68,13 @@ module.exports = (app, db) => {
   
     (SELECT 
             JSON_MERGE(JSON_OBJECT('username', username),
-                        JSON_OBJECT('_id', _id)) AS comment
+                        JSON_OBJECT('id', id)) AS comment
         FROM
             users
         WHERE
-            posts.author = users._id) AS author,
+            posts.author = users.id) AS author,
     DATE_FORMAT(createdAt, '%Y-%m-%dT%TZ') as createdAt,
-    _id,
+    id,
     title,
      ${
        req.user
@@ -81,8 +83,8 @@ module.exports = (app, db) => {
         FROM
             votes
         WHERE
-            votes.postid = posts._id
-                AND votes.authorid = '${req.user._id}'),0)) as voteState`
+            votes.postid = posts.id
+                AND votes.authorid = '${req.user.id}'),0)) as voteState`
          : "0 as voteState"
      },
      (SELECT 
@@ -90,9 +92,9 @@ module.exports = (app, db) => {
         FROM
             votes
         WHERE
-            votes.postid = posts._id) AS voteTotal
+            votes.postid = posts.id) AS voteTotal
 FROM
-    readditdb.posts WHERE _id = '${postid}'`;
+    readditdb.posts WHERE id = '${postid}'`;
 
     db.query(sql, function (err, post) {
       if (post && post.length > 0) {
@@ -129,16 +131,16 @@ FROM
     }
     const postTabledata = `${
       locationUrl ? `'${locationUrl.Location}'` : null
-    },"${req.body.title}","${req.user._id}",uuid(),NOW(),"${
+    },"${req.body.title}","${req.user.id}",uuid(),NOW(),"${
       req.body.content
     }", log10(1)* 86400 / .301029995663981 + UNIX_TIMESTAMP(posts.createdAt)`;
-    const sql = `INSERT INTO posts (image,title,author,_id,createdAt,content,hotscore) VALUES (${postTabledata});
-      SET @_id = uuid();
-      SET @last = last_insert_id();
-      SET @inserted = (SELECT posts._id FROM posts WHERE main_id = @last);
+    const sql = `INSERT INTO posts (image,title,author,id,createdAt,content,hotscore) VALUES (${postTabledata});
+      SET @id = uuid();
+      SET @last = last_insertid();
+      SET @inserted = (SELECT posts.id FROM posts WHERE mainid = @last);
       
-      INSERT INTO votes (_id,postid,authorid,score,uid) VALUES (@_id,@inserted,"${req.user._id}",1,CONCAT(@_id,"${req.user._id}"));
-      SELECT * from posts where _id = @inserted
+      INSERT INTO votes (id,postid,authorid,score,uid) VALUES (@id,@inserted,"${req.user.id}",1,CONCAT(@id,"${req.user.id}"));
+      SELECT * from posts where id = @inserted
       `;
 
     db.query(sql, (err, result) => {
@@ -146,29 +148,29 @@ FROM
     });
   });
   app.post("/api/comments", (req, res) => {
-    const userid = req.user._id;
+    const userid = req.user.id;
     const newComment = req.body;
     const sql = `
     SET @parent_depth = ${
       req.body.parentid
-        ? `ifnull((SELECT depth from comments where _id = '${req.body.parentid}' ),0)+1;`
+        ? `ifnull((SELECT depth from comments where id = '${req.body.parentid}' ),0)+1;`
         : `${0};`
     }
-    SET @_id = uuid();
-    INSERT INTO comments (master_comment,Author,CreatedAt,Content,_id,Postid,ParentId,depth)
+    SET @id = uuid();
+    INSERT INTO comments (master_comment,Author,CreatedAt,Content,id,Postid,ParentId,depth)
     VALUES (${
       req.body.master_comment ? `'${req.body.master_comment}'` : null
     },${`${userid}` ? `'${userid}'` : null},NOW(),"${
       newComment.content
-    }",@_id,"${newComment.postid}",${
+    }",@id,"${newComment.postid}",${
       req.body.parentid ? `'${req.body.parentid}'` : null
     },@parent_depth );
-    SET @last = last_insert_id();
+    SET @last = last_insertid();
    
-    SET @inserted = (SELECT comments._id FROM comments WHERE main_id = @last);
-    INSERT INTO votes (_id,commentid,authorid,score,uid) VALUES (@_id,@inserted,"${
-      req.user._id
-    }",1,CONCAT(@_id,"${req.user._id}"));
+    SET @inserted = (SELECT comments.id FROM comments WHERE mainid = @last);
+    INSERT INTO votes (id,commentid,authorid,score,uid) VALUES (@id,@inserted,"${
+      req.user.id
+    }",1,CONCAT(@id,"${req.user.id}"));
     SELECT 
     depth,
     parentid,
@@ -176,29 +178,29 @@ FROM
     content,
     (SELECT 
             JSON_MERGE(JSON_OBJECT('username', username),
-                        JSON_OBJECT('_id', _id)) AS comment
+                        JSON_OBJECT('id', id)) AS comment
         FROM
             users
         WHERE
-            comments.author = users._id) AS author,
+            comments.author = users.id) AS author,
     createdAt,
-    _id,
+    id,
     comments.postid,
     (SELECT 
             score
         FROM
             votes
         WHERE
-            comments._id = votes.commentid) AS voteState,
+            comments.id = votes.commentid) AS voteState,
     (SELECT 
             SUM(votes.score)
         FROM
             votes
         WHERE
-            votes.commentid = comments._id) AS voteTotal
+            votes.commentid = comments.id) AS voteTotal
 FROM
     readditdb.comments
-      WHERE _id = @inserted
+      WHERE id = @inserted
     `;
 
     db.query(sql, function (err, result) {
@@ -219,33 +221,33 @@ FROM
     content,
     (SELECT 
             JSON_MERGE(JSON_OBJECT('username', username),
-                        JSON_OBJECT('_id', _id)) AS comment
+                        JSON_OBJECT('id', id)) AS comment
         FROM
             users
         WHERE
-            comments.author = users._id) AS author,
+            comments.author = users.id) AS author,
     createdAt,master_comment,
 
-    (IFNULL(master_comment, _id)) AS master_comment,
-    _id,
+    (IFNULL(master_comment, id)) AS master_comment,
+    id,
     comments.postid,
     (SELECT 
             score
         FROM
             votes
         WHERE
-            comments._id = votes.commentid) AS voteState,
+            comments.id = votes.commentid) AS voteState,
     (SELECT 
             SUM(votes.score)
         FROM
             votes
         WHERE
-            votes.commentid = comments._id) AS voteTotal
+            votes.commentid = comments.id) AS voteTotal
             ,
             dense_rank() OVER( order by depth) buckets
 FROM
     readditdb.comments
-      WHERE Postid = "${postid}"
+      WHERE postid = "${postid}"
         ORDER BY master_comment
       `;
 
@@ -269,16 +271,16 @@ FROM
         WHEN votes.score = -1 THEN 1
         WHEN votes.score = 0 THEN 1
       END
-    where authorid = '${req.user._id}' AND ${req.body.type} = "${id}" ;
+    where authorid = '${req.user.id}' AND ${req.body.type} = "${id}" ;
 INSERT IGNORE INTO votes
     SET ${req.body.type} = "${id}", authorid = '${
-      req.user._id
-    }', score = 1, _id = uuid(),uid = '${id + req.user._id}';
+      req.user.id
+    }', score = 1, id = uuid(),uid = '${id + req.user.id}';
     ${
       req.body.type === "postid"
         ? `update posts
     SET hotscore = log10((select sum(votes.score) from votes where votes.${req.body.type} = "${id}")+1)* 86400 / .301029995663981 + UNIX_TIMESTAMP(posts.createdAt)
-     WHERE _id = "${id}";`
+     WHERE id = "${id}";`
         : ";"
     }
     `;
@@ -297,16 +299,16 @@ SET score =
     WHEN votes.score = -1 THEN 0
     WHEN votes.score = 0 THEN -1
 END
-where authorid = '${req.user._id}' AND ${req.body.type} = "${id}" ;
+where authorid = '${req.user.id}' AND ${req.body.type} = "${id}" ;
 INSERT IGNORE INTO votes
     SET ${req.body.type} = "${id}", authorid = '${
-      req.user._id
-    }', score = -1, _id = uuid(),uid = '${id + req.user._id}';
+      req.user.id
+    }', score = -1, id = uuid(),uid = '${id + req.user.id}';
     ${
       req.body.type === "postid"
         ? `update posts
     SET hotscore = log10((select sum(votes.score) from votes where votes.${req.body.type} = "${id}")+1)* 86400 / .301029995663981 + UNIX_TIMESTAMP(posts.createdAt)
-     WHERE _id = "${id}";`
+     WHERE id = "${id}";`
         : ";"
     }
 
@@ -319,7 +321,7 @@ INSERT IGNORE INTO votes
   });
   app.put("/api/posts/:id", (req, res) => {
     const postid = req.params.id;
-    const userid = req.user._id;
+    const userid = req.user.id;
     const sql = `
       update posts
 SET content =
@@ -328,7 +330,7 @@ SET content =
     ELSE posts.content
 
 END
-WHERE _id = '${postid}'
+WHERE id = '${postid}'
         
 `;
     db.query(sql, function (err, resp) {
@@ -337,11 +339,11 @@ WHERE _id = '${postid}'
   });
   app.delete("/api/posts/:id", (req, res) => {
     const postid = req.params.id;
-    const userid = req.user._id;
+    const userid = req.user.id;
     const sql = `
     DELETE FROM posts 
 WHERE
-    _id = '${postid}'AND author = '${userid}' 
+    id = '${postid}'AND author = '${userid}' 
      
         
 `;
@@ -357,7 +359,7 @@ WHERE
     const hash = await bcrypt.hash(password, genSalt);
 
     const sql = `
-      INSERT INTO users (_id,password,createdAt,username) VALUES (uuid(),"${hash}",NOW(),'${username}')
+      INSERT INTO users (id,password,createdAt,username) VALUES (uuid(),"${hash}",NOW(),'${username}')
     `;
 
     db.query(sql, function (err, resp) {
@@ -367,7 +369,7 @@ WHERE
   app.post("/api/login", async (req, res) => {
     const { username, password } = req.body;
 
-    const sql = `SELECT password,_id,username FROM users 
+    const sql = `SELECT password,id,username FROM users 
     
     WHERE username = '${username}'`;
 
@@ -378,14 +380,14 @@ WHERE
         if (result) {
           const token = jwt.sign(
             {
-              _id: resp[0]._id,
+              id: resp[0].id,
               username: username,
             },
             process.env.ACCESS_TOKEN,
             { expiresIn: 1.2 * Math.pow(10, 6) }
           );
           const refreshToken = jwt.sign(
-            { _id: resp[0]._id, username: username },
+            { id: resp[0].id, username: username },
             process.env.REFRESH_TOKEN,
             {
               expiresIn: "60 days",
@@ -398,7 +400,7 @@ WHERE
           res.json({
             jwt_token: token,
             username: username,
-            _id: resp[0]._id,
+            id: resp[0].id,
           });
         }
         if (result === false) {
@@ -413,29 +415,29 @@ WHERE
     content,
     (SELECT 
             JSON_MERGE(JSON_OBJECT('username', username),
-                        JSON_OBJECT('_id', _id)) AS comment
+                        JSON_OBJECT('id', id)) AS comment
         FROM
             users
         WHERE
-            posts.author = users._id) AS author,
+            posts.author = users.id) AS author,
     createdAt,
-    _id,
+    id,
     title,
     EXISTS( SELECT 
             score
         FROM
             votes
          WHERE
-            votes.postid = posts._id
+            votes.postid = posts.id
                 AND votes.authorid = ${
-                  req.user ? `'${req.user._id}'` : null
+                  req.user ? `'${req.user.id}'` : null
                 }) AS voteState,
     (SELECT 
             SUM(votes.score)
         FROM
             votes
         WHERE
-            votes.postid = posts._id) AS voteTotal
+            votes.postid = posts.id) AS voteTotal
 FROM
     readditdb.posts
     ORDER BY createdAt DESC
@@ -456,29 +458,29 @@ FROM
     content,
     (SELECT 
             JSON_MERGE(JSON_OBJECT('username', username),
-                        JSON_OBJECT('_id', _id)) AS comment
+                        JSON_OBJECT('id', id)) AS comment
         FROM
             users
         WHERE
-            posts.author = users._id) AS author,
+            posts.author = users.id) AS author,
     createdAt,
-    _id,
+    id,
     title,
     EXISTS( SELECT 
             score
         FROM
             votes
          WHERE
-            votes.postid = posts._id
+            votes.postid = posts.id
                 AND votes.authorid = ${
-                  req.user ? `'${req.user._id}'` : null
+                  req.user ? `'${req.user.id}'` : null
                 }) AS voteState,
     (SELECT 
             SUM(votes.score)
         FROM
             votes
         WHERE
-            votes.postid = posts._id) AS voteTotal
+            votes.postid = posts.id) AS voteTotal
 FROM
     readditdb.posts
     ORDER BY hotScore DESC
@@ -499,29 +501,29 @@ FROM
     content,
     (SELECT 
             JSON_MERGE(JSON_OBJECT('username', username),
-                        JSON_OBJECT('_id', _id)) AS comment
+                        JSON_OBJECT('id', id)) AS comment
         FROM
             users
         WHERE
-            posts.author = users._id) AS author,
+            posts.author = users.id) AS author,
     createdAt,
-    _id,
+    id,
     title,
     EXISTS( SELECT 
             score
         FROM
             votes
         WHERE
-            votes.postid = posts._id
+            votes.postid = posts.id
                 AND votes.authorid = ${
-                  req.user ? `'${req.user._id}'` : null
+                  req.user ? `'${req.user.id}'` : null
                 }) AS voteState,
     (SELECT 
             SUM(votes.score)
         FROM
             votes
         WHERE
-            votes.postid = posts._id) AS voteTotal
+            votes.postid = posts.id) AS voteTotal
 FROM
     readditdb.posts
     ORDER BY voteTotal DESC
@@ -551,7 +553,7 @@ FROM
             error: message,
           });
         } else {
-          res.json({ username: data.username, _id: data._id });
+          res.json({ username: data.username, id: data.id });
         }
       });
     }

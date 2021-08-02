@@ -1,7 +1,7 @@
 import axios from "axios";
 import "cross-fetch/polyfill";
 import { normalize } from "normalizr";
-import { post, comment } from "../schemas";
+import { comment, post } from "../schemas";
 import {
   DELETE_POST,
   EDIT_POST,
@@ -13,7 +13,6 @@ import {
   RECEIVE_COMMENTS,
   RECEIVE_POSTS,
   RECEIVE_SINGLE_POSTS,
-  REQUEST_COMMENTS,
   REQUEST_POSTS,
   REQUEST_SINGLE_POST,
   RESET_POST,
@@ -30,7 +29,7 @@ function requestPosts(e) {
   };
 }
 function submitPostSuccess(post) {
-  let id = post._id;
+  let id = post.id;
   post["newPost"] = true;
   return (dispatch) => {
     dispatch({ type: NEW_POST_SUCCESS, post, id });
@@ -123,7 +122,7 @@ function getNormalizeData(myData, params, type) {
   const normalizedData = normalize(myData, [type === "posts" ? post : comment]);
   return normalizedData;
 }
-export function sortPosts() {}
+
 export function deletePost(postId, params) {
   return (dispatch) => {
     dispatch({
@@ -166,6 +165,7 @@ export function fetchPosts(query, id, params, e) {
       )
       .then((res) => {
         const normalizedData = getNormalizeData(res.data, params, "posts");
+        console.log(normalizedData);
         dispatch({
           type:
             params && params.sort && e === "click" ? SORT_POSTS : RECEIVE_POSTS,
@@ -261,7 +261,9 @@ export function fetchSinglePost(id) {
       }
 
       const normalizedData = getNormalizeData(promises.posts, null, "posts");
+
       dispatch({ normalizedData, type: RECEIVE_SINGLE_POSTS });
+
       const comments = promises.comments;
 
       const normalizedComments = getNormalizeData(
@@ -269,6 +271,7 @@ export function fetchSinglePost(id) {
         null,
         "comments"
       );
+
       dispatch({
         type: RECEIVE_COMMENTS,
         comments: normalizedComments.entities.comments,

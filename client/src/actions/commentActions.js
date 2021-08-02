@@ -1,16 +1,15 @@
 import axios from "axios";
 import { normalize } from "normalizr";
-import { post, comment } from "../schemas";
-
+import { comment } from "../schemas";
 import {
   NEW_COMMENT_REQUEST,
   NEW_COMMENT_SUCCESS,
   NEW_REPLY_REQUEST,
   NEW_REPLY_SUCCESS,
-  VOTE_CAST,
   REQUEST_COMMENTS,
-  RECEIVE_COMMENTS,
+  VOTE_CAST,
 } from "../types";
+
 export function newCommentRequest() {
   return {
     type: NEW_COMMENT_REQUEST,
@@ -18,11 +17,6 @@ export function newCommentRequest() {
 }
 function getNormalizeData(myData, params) {
   const normalizedData = normalize(myData, [comment]);
-
-  console.log(
-    "🚀 ~ file: commentActions.js ~ line 21 ~ getNormalizeData ~ normalizedData",
-    normalizedData
-  );
 
   return normalizedData;
 }
@@ -40,7 +34,7 @@ export function newComment(content, postId) {
   return (dispatch, getState) => {
     dispatch(newCommentRequest());
     return axios({
-      url: "/api/comments",
+      url: `/api/comments/${postId}`,
       method: "POST",
       data: {
         content,
@@ -68,18 +62,6 @@ export function fetchComments(postid) {
         comments: data.data,
       };
     });
-
-    // .then((res) => {
-    //   const comments = res.data;
-    //   const normalizedData = getNormalizeData(comments);
-
-    //   dispatch({
-    //     type: RECEIVE_COMMENTS,
-    //     comments: normalizedData.entities.comments,
-    //     commentids: normalizedData.result,
-    //     postid,
-    //   });
-    // });
   };
 }
 export function newReplyRequest() {
@@ -131,10 +113,9 @@ export function newReply(content, postId, commentId, master_comment) {
     const parentIndex = post.comments.findIndex((comment) => {
       return comment === commentId;
     });
-    console.log(parentIndex);
 
     axios({
-      url: `/api/comments`,
+      url: `/api/comments/${postId}/${commentId}`,
       method: "POST",
       data: {
         content,

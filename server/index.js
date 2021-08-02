@@ -16,7 +16,7 @@ const checkauth = (req, res, next) => {
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, payload) => {
       if (err) {
         req.user = {
-          _id: "a90ba451-cbf7-11eb-be87-7085c27ba6fd",
+          id: "a90ba451-cbf7-11eb-be87-7085c27ba6fd",
         };
       } else {
         req.user = payload;
@@ -28,7 +28,7 @@ const checkauth = (req, res, next) => {
 };
 app.use(express.static(path.join(__dirname, "../client/build")));
 app.use(checkauth);
-app.listen(process.env.PORT || 5000, () => {});
+app.listen(process.env.PORT || 6200, () => {});
 require("./routes")(app, dbConnection.connect());
 
 module.exports = app;

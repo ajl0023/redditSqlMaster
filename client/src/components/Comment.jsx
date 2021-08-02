@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  changeCommentPoint,
-  newReply,
-  newReplyRequest,
+    changeCommentPoint,
+    newReply,
+    newReplyRequest
 } from "../actions/commentActions";
 import downvote, {
-  ReactComponent as DownArrow,
+    ReactComponent as DownArrow
 } from "../images/down-arrow.svg";
 import upvote, { ReactComponent as UpArrow } from "../images/up-arrow.svg";
 const Comment = ({ comment, handleShowLogin }) => {
@@ -21,14 +21,14 @@ const Comment = ({ comment, handleShowLogin }) => {
   const [replyToggle, setReplyToggle] = useState(false);
   const voteUp = () => {
     if (loggedIn) {
-      dispatch(changeCommentPoint(1, comment.postid, comment._id));
+      dispatch(changeCommentPoint(1, comment.postid, comment.id));
     } else {
       handleShowLogin();
     }
   };
   const voteDown = () => {
     if (loggedIn) {
-      dispatch(changeCommentPoint(-1, comment.postid, comment._id));
+      dispatch(changeCommentPoint(-1, comment.postid, comment.id));
     } else {
       handleShowLogin();
     }
@@ -38,7 +38,7 @@ const Comment = ({ comment, handleShowLogin }) => {
     dispatch(newReplyRequest());
   };
   const handleReply = () => {
-    let commentId = comment._id;
+    let commentId = comment.id;
     dispatch(
       newReply(replyText, comment.postid, commentId, comment.master_comment)
     );
@@ -50,7 +50,7 @@ const Comment = ({ comment, handleShowLogin }) => {
     for (let i = 0; i <= comment.depth; i++) {
       linesArr.push(
         <div
-          key={comment._id + "line" + i}
+          key={comment.id + "line" + i}
           style={{
             left: i === 0 ? 0 : i * 23,
           }}

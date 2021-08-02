@@ -1,14 +1,14 @@
 import axios from "axios";
 import {
-  CLEAR_LOGIN_MODAL,
-  CURRENT_USER,
-  LOGIN_REQUEST,
-  LOGIN_SUCCESS,
-  REQUEST_USER_INFO,
-  SIGNUP_ERROR,
-  SIGNUP_REQUEST,
-  SIGNUP_SUCCESS,
-  UNAUTHORIZED_ERROR,
+    CLEAR_LOGIN_MODAL,
+    CURRENT_USER,
+    LOGIN_REQUEST,
+    LOGIN_SUCCESS,
+    REQUEST_USER_INFO,
+    SIGNUP_ERROR,
+    SIGNUP_REQUEST,
+    SIGNUP_SUCCESS,
+    UNAUTHORIZED_ERROR
 } from "../types";
 let retryCount = 0;
 axios.interceptors.request.use((config) => {
@@ -99,7 +99,7 @@ export function login(username, password) {
     })
       .then((res) => {
         if (res.status === 200) {
-          dispatch(loginSuccess(res.data.username, res.data._id));
+          dispatch(loginSuccess(res.data.username, res.data.id));
           let token = res.data.jwt_token;
           return token;
         }
@@ -134,7 +134,7 @@ export function loggedIn() {
       dispatch({
         type: CURRENT_USER,
         username: data.data.username,
-        user: data.data._id,
+        user: data.data.id,
       });
       return "completed";
     } catch (error) {

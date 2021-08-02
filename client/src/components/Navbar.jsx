@@ -139,7 +139,7 @@ function Navbar(props) {
                             className={`search-dropdown-content ${
                               !searchActive ? `hide-search` : null
                             } `}
-                            key={post._id}
+                            key={post.id}
                           >
                             <Link
                               className={`search-content-item ${
@@ -147,7 +147,7 @@ function Navbar(props) {
                                   ? "dark-mode-dropdown-item"
                                   : ""
                               }`}
-                              to={`/post/${post._id}`}
+                              to={`/post/${post.id}`}
                             >
                               {post.title}
                             </Link>

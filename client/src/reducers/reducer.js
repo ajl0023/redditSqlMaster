@@ -32,7 +32,7 @@ import {
   SORT_POSTS,
   SPLICED_POST,
   UNAUTHORIZED_ERROR,
-  VOTE_CAST,
+  VOTE_CAST
 } from "../types";
 function combineArrays(arr1, arr2) {
   let combined = arr1.concat(arr2);
@@ -48,7 +48,7 @@ function addComment(state, action) {
         ...state.byId[action.postId],
         comments: [
           ...state.byId[action.postId].comments,
-          action.savedComment._id,
+          action.savedComment.id,
         ],
       },
     },
@@ -324,7 +324,7 @@ export function posts(
       const currPostid = state.byId[action.postId];
 
       const newArray = [...currPostid.comments];
-      newArray.splice(newIndex, 0, action.reply._id);
+      newArray.splice(newIndex, 0, action.reply.id);
 
       return Object.assign({}, state, {
         byId: {
@@ -415,8 +415,8 @@ function addCommentEntry(state, action) {
     ...state,
     byId: {
       ...state.byId,
-      [action.savedComment._id]: {
-        ...state.byId[savedComment._id],
+      [action.savedComment.id]: {
+        ...state.byId[savedComment.id],
         ...action.savedComment,
       },
     },
@@ -515,7 +515,7 @@ const newReply = (state, action) => {
     ...state,
     byId: {
       ...state.byId,
-      [action.reply._id]: action.reply,
+      [action.reply.id]: action.reply,
     },
   };
 };
@@ -669,7 +669,7 @@ function login(
 function currentUser(
   state = {
     username: "",
-    _id: "",
+    id: "",
     err: null,
   },
   action
@@ -678,23 +678,23 @@ function currentUser(
     case LOG_OUT:
       return Object.assign({}, state, {
         username: null,
-        _id: null,
+        id: null,
       });
     case REFRESH_USER:
       return Object.assign({}, state, {
         username: action.userInfo.username,
-        _id: action.userInfo._id,
+        id: action.userInfo.id,
       });
     case LOGIN_SUCCESS:
       return Object.assign({}, state, {
         username: action.username,
-        _id: action.id,
+        id: action.id,
       });
     case CURRENT_USER:
       return Object.assign({}, state, {
         isLoggedIn: true,
         username: action.username,
-        _id: action.user,
+        id: action.user,
       });
     default:
       return state;

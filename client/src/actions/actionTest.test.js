@@ -68,7 +68,7 @@ describe("post reducer", () => {
         err: null,
         passwordError: null,
       },
-      currentUser: { username: "", _id: "", err: null },
+      currentUser: { username: "", id: "", err: null },
       listings: { sortOrder: "default", listingOrder: {}, status: "idle" },
     });
   });
@@ -80,7 +80,7 @@ test("should create Post", () => {
     voteTotal: 1,
     hotScore: 10754.9874292,
     topScore: 1618002.437314,
-    _id: "6070c205de1d4d31e4f69e4a",
+    id: "6070c205de1d4d31e4f69e4a",
     title: "r",
     content: "r",
     createdAt: "2021-04-09T21:07:17.314Z",
@@ -241,7 +241,7 @@ test("should increase point with a downvote", () => {
 });
 test("should add comment", () => {
   const savedComment = {
-    _id: "60710cd1de1d4d31e4f69e71",
+    id: "60710cd1de1d4d31e4f69e71",
   };
   const expectedState = {
     ...rootReducer(
@@ -289,7 +289,7 @@ test("should add comment", () => {
 });
 test("should add reply", () => {
   const savedComment = {
-    _id: "12345",
+    id: "12345",
     comments: [],
   };
 
@@ -301,9 +301,9 @@ test("should add reply", () => {
             "607109f0de1d4d31e4f69e5b": {
               comments: ["12345"],
             },
-            [savedComment._id]: {
+            [savedComment.id]: {
               comments: [],
-              _id: "12345",
+              id: "12345",
             },
           },
         },

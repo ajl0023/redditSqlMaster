@@ -1,19 +1,19 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useParams } from "react-router-dom";
-
 import {
-  fetchPosts,
-  fetchSinglePost,
-  newPostSubmissionType,
-  nextPage,
-  submitPostAttempt,
+    fetchPosts,
+    fetchSinglePost,
+    newPostSubmissionType,
+    nextPage,
+    submitPostAttempt
 } from "../actions/postActions";
 import imagePost from "../images/image-placeholder.svg";
 import linkPost from "../images/link-post.svg";
 import defaultPic from "../images/reddit-default.svg";
 import Post from "./Post";
 import Signup from "./Signup";
+
 function Home(props) {
   const dispatch = useDispatch();
   const allPosts = useSelector((state) => {
@@ -183,7 +183,7 @@ function Home(props) {
         <div className={"posts-container"}>
           {postsToDisplay.map((post) => {
             if (post) {
-              return <Post history={props} key={post._id} post={post} />;
+              return <Post history={props} key={post.id} post={post} />;
             }
           })}
           <div className="page-set-container"></div>

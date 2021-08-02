@@ -13,7 +13,7 @@ const Post = ({ post, history }) => {
   const checkDisplay = useSelector((state) => {
     return state.display.display;
   });
-  const currentUser = useSelector((state) => state.currentUser._id);
+  const currentUser = useSelector((state) => state.currentUser.id);
   const postStatus = useSelector((state) => state.listings.status);
   const handleDelete = () => {
     setDelete(!deleteButton);
@@ -28,7 +28,7 @@ const Post = ({ post, history }) => {
   return (
     <>
       <div
-        key={post._id}
+        key={post.id}
         className={`card-container ${
           checkDisplay === "dark" ? "dark-mode-card" : ""
         } `}
@@ -44,10 +44,10 @@ const Post = ({ post, history }) => {
           <h4 className="card-title">
             <Link
               onClick={() => {
-                dispatch(fetchSinglePost(post._id));
+                dispatch(fetchSinglePost(post.id));
               }}
               to={{
-                pathname: `/post/${post._id}`,
+                pathname: `/post/${post.id}`,
                 state: {
                   modal: true,
                 },
@@ -80,7 +80,7 @@ const Post = ({ post, history }) => {
             </li>
           </div>
         </div>
-        {post.author && currentUser === post.author._id ? (
+        {post.author && currentUser === post.author.id ? (
           <div className="edit-del-container">
             <div className="edit-del-content">
               {deleteButton ? (
@@ -89,7 +89,7 @@ const Post = ({ post, history }) => {
                     <p className="delete-confirm">Delete?</p>
                   </div>
                   <li
-                    onClick={() => confirmedDelete(post._id)}
+                    onClick={() => confirmedDelete(post.id)}
                     className="delete-button-yes"
                   >
                     Yes

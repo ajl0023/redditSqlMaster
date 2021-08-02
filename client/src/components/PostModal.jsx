@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
-import { fetchComments, newComment } from "../actions/commentActions";
+import { newComment } from "../actions/commentActions";
 import { changePoint, editPost } from "../actions/postActions";
 import downvote, {
-  ReactComponent as DownArrow,
+  ReactComponent as DownArrow
 } from "../images/down-arrow.svg";
 import { ReactComponent as Edit } from "../images/edit.svg";
 import upvote, { ReactComponent as UpArrow } from "../images/up-arrow.svg";
 import Comment from "./Comment";
-import { createSelector } from "reselect";
 
 const PostModal = (props) => {
+  let currentPost = props.post;
   const params = useParams();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -19,13 +19,17 @@ const PostModal = (props) => {
   const [edit, setEdit] = useState(false);
   const [editText, setEditText] = useState("");
 
-  const currentUser = useSelector((state) => state.currentUser._id);
+  const currentUser = useSelector((state) => state.currentUser.id);
   const comments = useSelector((state) => {
     return state.comments.byId;
   });
-  const commentids = Object.keys(comments);
+  const commentids = useSelector((state) => {
+    if (currentPost) {
+      return state.posts.byId[currentPost.id].comments;
+    }
+  });
+
   const loggedIn = useSelector((state) => state.login.isLoggedIn);
-  let currentPost = props.post;
 
   const back = (e) => {
     e.stopPropagation();
@@ -34,12 +38,12 @@ const PostModal = (props) => {
     history.push("/");
   };
   const handleSubmitComment = () => {
-    dispatch(newComment(commentText, props.post._id));
+    dispatch(newComment(commentText, props.post.id));
     setCommentText("");
   };
   const handleUpvote = () => {
     if (loggedIn) {
-      dispatch(changePoint(1, props.post._id, props.post.voteState));
+      dispatch(changePoint(1, props.post.id, props.post.voteState));
     } else {
       props.handleShowLogin();
     }
@@ -49,7 +53,7 @@ const PostModal = (props) => {
   });
   const handleDownVote = () => {
     if (loggedIn) {
-      dispatch(changePoint(-1, props.post._id, props.post.voteState));
+      dispatch(changePoint(-1, props.post.id, props.post.voteState));
     } else {
       props.handleShowLogin();
     }
@@ -64,7 +68,7 @@ const PostModal = (props) => {
     dispatch(editPost(id, editText));
     setEdit(false);
   };
-  if (!currentPost || !comments) {
+  if (!currentPost || !comments || !commentids) {
     return <div></div>;
   }
   const date = new Date(currentPost.createdAt);
@@ -80,6 +84,7 @@ const PostModal = (props) => {
       : commentids.map((id) => {
           return comments[id];
         });
+
   if (postComments.length > 0) {
     findAllComments(postComments);
   }
@@ -126,7 +131,7 @@ const PostModal = (props) => {
           </h4>
         </>
         <>
-          {currentPost.author && currentUser === currentPost.author._id ? (
+          {currentPost.author && currentUser === currentPost.author.id ? (
             <div className="edit-container">
               <p className={`card-modal-content ${edit ? "inactive" : null} `}>
                 {currentPost.content}
@@ -140,7 +145,7 @@ const PostModal = (props) => {
               ></textarea>
               <div className={edit ? `edit-button-container` : `inactive`}>
                 <button
-                  onClick={() => saveEdit(currentPost._id)}
+                  onClick={() => saveEdit(currentPost.id)}
                   className="edit-submit-button"
                 >
                   Save
@@ -253,7 +258,7 @@ const PostModal = (props) => {
                 <Comment
                   allComments={comments}
                   handleShowLogin={props.handleShowLogin}
-                  key={comment._id}
+                  key={comment.id}
                   comment={comment}
                 />
               );
