@@ -165,7 +165,7 @@ export function fetchPosts(query, id, params, e) {
       )
       .then((res) => {
         const normalizedData = getNormalizeData(res.data, params, "posts");
-        console.log(normalizedData);
+        
         dispatch({
           type:
             params && params.sort && e === "click" ? SORT_POSTS : RECEIVE_POSTS,

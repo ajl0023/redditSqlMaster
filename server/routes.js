@@ -44,10 +44,10 @@ module.exports = (app, db) => {
                 votes.postid = posts.id) AS voteTotal
     FROM
         readditdb.posts`;
-    console.log(sql);
+    
     db.query(sql, async function (err, result) {
       if (err) throw err;
-      console.log(result);
+      
       const parsed = result.map((result) => {
         result.author = JSON.parse(result.author);
         return result;
@@ -375,7 +375,7 @@ WHERE
 
     db.query(sql, function (err, resp) {
       const hash = resp[0].password;
-      console.log(process.env.ACCESS_TOKEN)
+      
       bcrypt.compare(password, hash, (err, result) => {
         if (result) {
           const token = jwt.sign(
