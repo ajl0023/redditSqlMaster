@@ -375,7 +375,7 @@ WHERE
 
     db.query(sql, function (err, resp) {
       const hash = resp[0].password;
-
+      console.log(process.env.ACCESS_TOKEN)
       bcrypt.compare(password, hash, (err, result) => {
         if (result) {
           const token = jwt.sign(
@@ -386,6 +386,7 @@ WHERE
             process.env.ACCESS_TOKEN,
             { expiresIn: 1.2 * Math.pow(10, 6) }
           );
+          
           const refreshToken = jwt.sign(
             { id: resp[0].id, username: username },
             process.env.REFRESH_TOKEN,
