@@ -16,7 +16,7 @@ const checkauth = (req, res, next) => {
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, payload) => {
       if (err) {
         req.user = {
-          id: "a90ba451-cbf7-11eb-be87-7085c27ba6fd",
+          id: null
         };
       } else {
         req.user = payload;
